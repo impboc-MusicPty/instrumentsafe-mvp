@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstrumentSafe - Registro Seguro</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      padding: 1rem 0;
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 28px; font-weight: 700; color: #60a5fa; text-align: center; }
+    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .tab { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 14px 28px;
+      background: #1e2937;
+      color: #cbd5e1;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .tab-btn.active {
+      background: #3b82f6;
+      color: white;
+    }
+    .card {
+      background: #1e2937;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+    }
+    button {
+      padding: 14px 32px;
+      background: #22c55e;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .result { margin-top: 20px; padding: 20px; background: #0f172a; border-radius: 12px; }
+    h2 { color: #60a5fa; }
+    label { color: #94a3b8; display: block; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <header><div class="logo">🎸 InstrumentSafe</div></header>
+
+  <div class="container">
+    <div class="tab">
+      <button class="tab-btn active" onclick="openTab(0)">Registrar Instrumento</button>
+      <button class="tab-btn" onclick="openTab(1)">Consultar por Serial</button>
+      <button class="tab-btn" onclick="openTab(2)">Mis Instrumentos</button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div class="section active card" id="tab0">
+      <h2>📋 Registro de Instrumento</h2>
+      
+      <input type="text" id="propietario" placeholder="Nombre completo del propietario">
+      <input type="text" id="serial" placeholder="Número de Serie *">
+      <input type="text" id="marca" placeholder="Marca">
+      <input type="text" id="modelo" placeholder="Modelo">
+      
+      <select id="tipo">
+        <option value="">Tipo de Instrumento</option>
+        <option value="Guitarra Eléctrica">Guitarra Eléctrica</option>
+        <option value="Guitarra Acústica">Guitarra Acústica</option>
+        <option value="Bajo">Bajo</option>
+        <option value="Violín">Violín</option>
+        <option value="Batería">Batería</option>
+        <option value="Teclado">Teclado / Piano</option>
+        <option value="Otro">Otro</option>
+      </select>
+
+      <select id="estado">
+        <option value="">Estado del Instrumento</option>
+        <option value="Nuevo">Nuevo</option>
+        <option value="En Uso">En Uso</option>
+      </select>
+
+      <select id="tipoInstitucion">
+        <option value="">Tipo de Institución</option>
+        <option value="Pública">Pública</option>
+        <option value="Privada">Privada</option>
+      </select>
+      <input type="text" id="nombreInstitucion" placeholder="Nombre de la institución">
+
+      <!-- NUEVA SECCIÓN DE FACTURA -->
+      <label>📄 Datos de la Factura</label>
+      <input type="text" id="numeroFactura" placeholder="Número de Factura">
+      <input type="text" id="tiendaCompra" placeholder="Nombre de la Tienda / Empresa">
+      
+      <label>📸 Imagen de la Factura</label>
+      <input type="file" id="fotoFactura" accept="image/*">
+
+      <label>📸 Fotografías del Instrumento (hasta 3)</label>
+      <input type="file" id="foto1" accept="image/*">
+      <input type="file" id="foto2" accept="image/*">
+      <input type="file" id="foto3" accept="image/*">
+
+      <button onclick="registrarInstrumento()">Registrar Instrumento</button>
+    </div>
+
+    <!-- CONSULTA y MIS INSTRUMENTOS se mantienen igual -->
+    <div class="section card" id="tab1">
+      <h2>🔎 Consultar Instrumento</h2>
+      <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
+      <button onclick="consultarSerial()">Buscar</button>
+      <div id="resultadoConsulta" class="result"></div>
+    </div>
+
+    <div class="section card" id="tab2">
+      <h2>🎵 Mis Instrumentos Registrados</h2>
+      <button onclick="mostrarMisInstrumentos()">Actualizar Lista</button>
+      <div id="listaInstrumentos" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
+
+    function registrarInstrumento() {
+      const serial = document.getElementById('serial').value.trim();
+      if (!serial) {
+        alert("⚠️ El número de serie es obligatorio");
+        return;
+      }
+
+      const nuevo = {
+        id: Date.now(),
+        propietario: document.getElementById('propietario').value,
+        serial: serial.toUpperCase(),
+        marca: document.getElementById('marca').value,
+        modelo: document.getElementById('modelo').value,
+        tipo: document.getElementById('tipo').value,
+        estado: document.getElementById('estado').value,
+        tipoInstitucion: document.getElementById('tipoInstitucion').value,
+        nombreInstitucion: document.getElementById('nombreInstitucion').value,
+        numeroFactura: document.getElementById('numeroFactura').value,
+        tiendaCompra: document.getElementById('tiendaCompra').value,
+        fecha: new Date().toLocaleDateString('es-ES')
+      };
+
+      instrumentos.push(nuevo);
+      localStorage.setItem('instrumentos', JSON.stringify(instrumentos));
+      
+      alert("✅ Instrumento registrado correctamente");
+      limpiarFormulario();
+    }
+
+    function consultarSerial() {
+      const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
+      const resultado = document.getElementById('resultadoConsulta');
+      const encontrado = instrumentos.find(i => i.serial === serial);
+      
+      if (encontrado) {
+        resultado.innerHTML = `
+          <strong>✅ Instrumento Encontrado</strong><br><br>
+          Tipo: ${encontrado.tipo}<br>
+          Marca/Modelo: ${encontrado.marca} ${encontrado.modelo}<br>
+          Propietario: ${encontrado.propietario}<br>
+          Tienda: ${encontrado.tiendaCompra || 'No registrada'}<br>
+          Factura: ${encontrado.numeroFactura || 'No registrada'}
+        `;
+      } else {
+        resultado.innerHTML = `<strong style="color:#ef4444;">❌ Instrumento NO encontrado.</strong>`;
+      }
+    }
+
+    function mostrarMisInstrumentos() {
+      const lista = document.getElementById('listaInstrumentos');
+      if (instrumentos.length === 0) {
+        lista.inner

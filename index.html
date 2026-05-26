@@ -78,7 +78,6 @@
       <button class="tab-btn" onclick="openTab(2)">Mis Instrumentos</button>
     </div>
 
-    <!-- REGISTRO -->
     <div class="section active card" id="tab0">
       <h2>📋 Registro de Instrumento</h2>
       
@@ -87,7 +86,7 @@
       <input type="text" id="marca" placeholder="Marca">
       <input type="text" id="modelo" placeholder="Modelo">
 
-      <label>Tipo de Instrumento - Categoría</label>
+      <label>Categoría Principal</label>
       <select id="categoria" onchange="actualizarSubcategoria()">
         <option value="">Seleccione Categoría</option>
         <option value="Viento Madera">Viento Madera</option>
@@ -99,13 +98,17 @@
       </select>
 
       <label>Subcategoría</label>
-      <select id="subcategoria">
+      <select id="subcategoria" onchange="actualizarTipoInstrumento()">
         <option value="">Seleccione Subcategoría</option>
       </select>
 
-      <!-- Comentarios justo después de la subcategoría -->
+      <label>Tipo de Instrumento Específico</label>
+      <select id="tipoEspecifico">
+        <option value="">Seleccione Tipo Específico</option>
+      </select>
+
       <label>✍️ Comentarios Generales del Instrumento</label>
-      <textarea id="comentarios" rows="4" placeholder="Detalles adicionales, accesorios, condiciones especiales, observaciones del instrumento..."></textarea>
+      <textarea id="comentarios" rows="4" placeholder="Detalles adicionales, accesorios, condiciones especiales..."></textarea>
 
       <label>Estado del Instrumento</label>
       <select id="estado">
@@ -114,28 +117,10 @@
         <option value="En Uso">En Uso</option>
       </select>
 
-      <label>Tipo de Institución</label>
-      <select id="tipoInstitucion">
-        <option value="">Seleccione Tipo</option>
-        <option value="Pública">Pública</option>
-        <option value="Privada">Privada</option>
-      </select>
-      <input type="text" id="nombreInstitucion" placeholder="Nombre de la institución">
-
-      <label>📄 Datos de la Factura</label>
-      <input type="text" id="numeroFactura" placeholder="Número de Factura">
-      <input type="text" id="tiendaCompra" placeholder="Nombre de la Tienda / Empresa">
-      <input type="file" id="fotoFactura" accept="image/*">
-
-      <label>📸 Fotografías del Instrumento (hasta 3)</label>
-      <input type="file" id="foto1" accept="image/*">
-      <input type="file" id="foto2" accept="image/*">
-      <input type="file" id="foto3" accept="image/*">
-
       <button onclick="registrarInstrumento()">Registrar Instrumento</button>
     </div>
 
-    <!-- Otras pestañas -->
+    <!-- Otras pestañas (Consulta y Mis Instrumentos) -->
     <div class="section card" id="tab1">
       <h2>🔎 Consultar Instrumento</h2>
       <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
@@ -153,15 +138,6 @@
   <script>
     let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
 
-    const subcategorias = {
-      "Viento Madera": ["Flauta Transversal", "Piccolo", "Clarinete", "Oboe", "Fagot", "Corno Inglés"],
-      "Viento Metal": ["Trompeta", "Fliscorno", "Corno", "Trombón", "Eufonio", "Tuba", "Sousafón"],
-      "Cuerda": ["Cuerda Frotada", "Cuerda Pulsada"],
-      "Percusión": ["Batería", "Tambores", "Marimba"],
-      "Teclado": ["Piano", "Teclado", "Órgano"],
-      "Otros": ["Otros"]
-    };
-
     function actualizarSubcategoria() {
       const categoria = document.getElementById('categoria').value;
       const subSelect = document.getElementById('subcategoria');
@@ -169,20 +145,38 @@
 
       if (categoria === "Cuerda") {
         subSelect.innerHTML += `
-          <option value="Cuerda Frotada">Cuerda Frotada (Violín, Viola, Violonchelo, Contrabajo)</option>
-          <option value="Cuerda Pulsada">Cuerda Pulsada (Guitarra, Bajo, Ukelele, Arpa, Banjo)</option>
+          <option value="Cuerda Frotada">Cuerda Frotada</option>
+          <option value="Cuerda Pulsada">Cuerda Pulsada</option>
         `;
-      } else if (subcategorias[categoria]) {
-        subcategorias[categoria].forEach(sub => {
-          const option = document.createElement('option');
-          option.value = sub;
-          option.textContent = sub;
-          subSelect.appendChild(option);
-        });
+      }
+      // Puedes agregar más subcategorías aquí después
+    }
+
+    function actualizarTipoInstrumento() {
+      const subcategoria = document.getElementById('subcategoria').value;
+      const tipoSelect = document.getElementById('tipoEspecifico');
+      tipoSelect.innerHTML = '<option value="">Seleccione Tipo Específico</option>';
+
+      if (subcategoria === "Cuerda Frotada") {
+        tipoSelect.innerHTML += `
+          <option value="Violín">Violín</option>
+          <option value="Viola">Viola</option>
+          <option value="Violonchelo">Violonchelo</option>
+          <option value="Contrabajo">Contrabajo</option>
+        `;
+      } else if (subcategoria === "Cuerda Pulsada") {
+        tipoSelect.innerHTML += `
+          <option value="Guitarra Clásica">Guitarra Clásica</option>
+          <option value="Guitarra Acústica">Guitarra Acústica</option>
+          <option value="Guitarra Eléctrica">Guitarra Eléctrica</option>
+          <option value="Bajo">Bajo</option>
+          <option value="Ukelele">Ukelele</option>
+          <option value="Arpa">Arpa</option>
+          <option value="Banjo">Banjo</option>
+        `;
       }
     }
 
-    // Resto de funciones (registrar, consultar, etc.)
     function registrarInstrumento() {
       const serial = document.getElementById('serial').value.trim();
       if (!serial) {
@@ -198,12 +192,9 @@
         modelo: document.getElementById('modelo').value,
         categoria: document.getElementById('categoria').value,
         subcategoria: document.getElementById('subcategoria').value,
+        tipoEspecifico: document.getElementById('tipoEspecifico').value,
         comentarios: document.getElementById('comentarios').value,
         estado: document.getElementById('estado').value,
-        tipoInstitucion: document.getElementById('tipoInstitucion').value,
-        nombreInstitucion: document.getElementById('nombreInstitucion').value,
-        numeroFactura: document.getElementById('numeroFactura').value,
-        tiendaCompra: document.getElementById('tiendaCompra').value,
         fecha: new Date().toLocaleDateString('es-ES')
       };
 
@@ -214,6 +205,7 @@
       limpiarFormulario();
     }
 
+    // Funciones restantes (consultar, mostrar, etc.)
     function consultarSerial() {
       const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
       const resultado = document.getElementById('resultadoConsulta');
@@ -222,9 +214,8 @@
       if (encontrado) {
         resultado.innerHTML = `
           <strong>✅ Instrumento Encontrado</strong><br><br>
-          ${encontrado.categoria} → ${encontrado.subcategoria}<br>
+          ${encontrado.categoria} → ${encontrado.subcategoria} → ${encontrado.tipoEspecifico}<br>
           ${encontrado.marca} ${encontrado.modelo}<br>
-          Propietario: ${encontrado.propietario}<br>
           Comentarios: ${encontrado.comentarios || 'Sin comentarios'}
         `;
       } else {
@@ -241,7 +232,7 @@
       let html = "<ul style='list-style:none; padding:0;'>";
       instrumentos.forEach(inst => {
         html += `<li style="padding:15px; background:#0f172a; margin:10px 0; border-radius:10px;">
-          <strong>${inst.categoria} - ${inst.subcategoria}</strong><br>
+          <strong>${inst.categoria} - ${inst.subcategoria} - ${inst.tipoEspecifico}</strong><br>
           ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}
         </li>`;
       });
@@ -256,12 +247,9 @@
       document.getElementById('modelo').value = '';
       document.getElementById('categoria').value = '';
       document.getElementById('subcategoria').value = '';
+      document.getElementById('tipoEspecifico').value = '';
       document.getElementById('comentarios').value = '';
       document.getElementById('estado').value = '';
-      document.getElementById('tipoInstitucion').value = '';
-      document.getElementById('nombreInstitucion').value = '';
-      document.getElementById('numeroFactura').value = '';
-      document.getElementById('tiendaCompra').value = '';
     }
 
     function openTab(n) {

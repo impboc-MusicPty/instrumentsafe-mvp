@@ -16,14 +16,13 @@
     }
     header {
       background: rgba(15, 23, 42, 0.98);
-      backdrop-filter: blur(10px);
       padding: 1.2rem 0;
       border-bottom: 1px solid #334155;
       position: sticky;
       top: 0;
       z-index: 100;
     }
-    .logo { font-size: 32px; font-weight: 700; color: #60a5fa; text-align: center; letter-spacing: -1px; }
+    .logo { font-size: 32px; font-weight: 700; color: #60a5fa; text-align: center; }
     .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
     
     .tab { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
@@ -35,12 +34,10 @@
       border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s;
     }
     .tab-btn.active {
       background: #3b82f6;
       color: white;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
     }
 
     .card {
@@ -48,7 +45,6 @@
       border-radius: 20px;
       padding: 40px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-      border: 1px solid #334155;
     }
 
     input, select, textarea {
@@ -61,35 +57,23 @@
       color: white;
       font-size: 16px;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: #60a5fa;
-      outline: none;
-    }
-
-    button {
-      padding: 16px 36px;
-      background: linear-gradient(90deg, #22c55e, #4ade80);
-      color: black;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 17px;
-      transition: all 0.3s;
-    }
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
-    }
-
     label { 
       color: #94a3b8; 
       display: block; 
       margin-top: 20px; 
       font-weight: 600;
-      font-size: 15px;
     }
-    h2 { color: #60a5fa; margin-bottom: 30px; font-size: 26px; }
+    button {
+      padding: 16px 36px;
+      background: #22c55e;
+      color: black;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    h2 { color: #60a5fa; margin-bottom: 30px; }
   </style>
 </head>
 <body>
@@ -152,7 +136,6 @@
       <label>📄 Datos de la Factura</label>
       <input type="text" id="numeroFactura" placeholder="Número de Factura">
       <input type="text" id="tiendaCompra" placeholder="Nombre de la Tienda / Empresa">
-      <input type="file" id="fotoFactura" accept="image/*">
 
       <label>📸 Fotografías del Instrumento (hasta 3)</label>
       <input type="file" id="foto1" accept="image/*">
@@ -185,15 +168,15 @@
       const subSelect = document.getElementById('subcategoria');
       subSelect.innerHTML = '<option value="">Seleccione Subcategoría</option>';
 
-      if (categoria === "Cuerda") {
+      if (categoria === "Viento Madera") {
+        subSelect.innerHTML += `<option value="Viento Madera">Viento Madera</option>`;
+      } else if (categoria === "Viento Metal") {
+        subSelect.innerHTML += `<option value="Viento Metal">Viento Metal</option>`;
+      } else if (categoria === "Cuerda") {
         subSelect.innerHTML += `
           <option value="Cuerda Frotada">Cuerda Frotada</option>
           <option value="Cuerda Pulsada">Cuerda Pulsada</option>
         `;
-      } else if (categoria === "Viento Madera") {
-        subSelect.innerHTML += `<option value="Viento Madera">Viento Madera</option>`;
-      } else if (categoria === "Viento Metal") {
-        subSelect.innerHTML += `<option value="Viento Metal">Viento Metal</option>`;
       }
     }
 
@@ -254,7 +237,6 @@
       limpiarFormulario();
     }
 
-    // Funciones de consulta y lista (mantenidas)
     function consultarSerial() {
       const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
       const resultado = document.getElementById('resultadoConsulta');
@@ -263,7 +245,7 @@
       if (encontrado) {
         resultado.innerHTML = `
           <strong>✅ Instrumento Encontrado</strong><br><br>
-          ${encontrado.categoria} → ${encontrado.subcategoria} → ${encontrado.tipoEspecifico || ''}<br>
+          ${encontrado.categoria} → ${encontrado.subcategoria} → ${encontrado.tipoEspecifico}<br>
           ${encontrado.marca} ${encontrado.modelo}<br>
           Propietario: ${encontrado.propietario}
         `;

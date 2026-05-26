@@ -103,8 +103,9 @@
         <option value="">Seleccione Subcategoría</option>
       </select>
 
+      <!-- Comentarios justo después de la subcategoría -->
       <label>✍️ Comentarios Generales del Instrumento</label>
-      <textarea id="comentarios" rows="4" placeholder="Detalles adicionales, accesorios, condiciones especiales, etc..."></textarea>
+      <textarea id="comentarios" rows="4" placeholder="Detalles adicionales, accesorios, condiciones especiales, observaciones del instrumento..."></textarea>
 
       <label>Estado del Instrumento</label>
       <select id="estado">
@@ -134,7 +135,7 @@
       <button onclick="registrarInstrumento()">Registrar Instrumento</button>
     </div>
 
-    <!-- CONSULTA -->
+    <!-- Otras pestañas -->
     <div class="section card" id="tab1">
       <h2>🔎 Consultar Instrumento</h2>
       <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
@@ -142,7 +143,6 @@
       <div id="resultadoConsulta" class="result"></div>
     </div>
 
-    <!-- MIS INSTRUMENTOS -->
     <div class="section card" id="tab2">
       <h2>🎵 Mis Instrumentos Registrados</h2>
       <button onclick="mostrarMisInstrumentos()">Actualizar Lista</button>
@@ -154,10 +154,10 @@
     let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
 
     const subcategorias = {
-      "Viento Madera": ["Flauta Transversal", "Piccolo", "Clarinete Requinto", "Clarinete Soprano", "Clarinete Alto", "Oboe", "Fagot", "Corno Inglés"],
-      "Viento Metal": ["Trompeta en Sib", "Trompeta en Do", "Fliscorno", "Corno", "Trombón Tenor", "Trombón Bajo", "Eufonio", "Tuba", "Sousafón"],
+      "Viento Madera": ["Flauta Transversal", "Piccolo", "Clarinete", "Oboe", "Fagot", "Corno Inglés"],
+      "Viento Metal": ["Trompeta", "Fliscorno", "Corno", "Trombón", "Eufonio", "Tuba", "Sousafón"],
       "Cuerda": ["Cuerda Frotada", "Cuerda Pulsada"],
-      "Percusión": ["Batería", "Tambor", "Marimba", "Congas"],
+      "Percusión": ["Batería", "Tambores", "Marimba"],
       "Teclado": ["Piano", "Teclado", "Órgano"],
       "Otros": ["Otros"]
     };
@@ -167,7 +167,12 @@
       const subSelect = document.getElementById('subcategoria');
       subSelect.innerHTML = '<option value="">Seleccione Subcategoría</option>';
 
-      if (subcategorias[categoria]) {
+      if (categoria === "Cuerda") {
+        subSelect.innerHTML += `
+          <option value="Cuerda Frotada">Cuerda Frotada (Violín, Viola, Violonchelo, Contrabajo)</option>
+          <option value="Cuerda Pulsada">Cuerda Pulsada (Guitarra, Bajo, Ukelele, Arpa, Banjo)</option>
+        `;
+      } else if (subcategorias[categoria]) {
         subcategorias[categoria].forEach(sub => {
           const option = document.createElement('option');
           option.value = sub;
@@ -177,6 +182,7 @@
       }
     }
 
+    // Resto de funciones (registrar, consultar, etc.)
     function registrarInstrumento() {
       const serial = document.getElementById('serial').value.trim();
       if (!serial) {
@@ -232,14 +238,12 @@
         lista.innerHTML = "<p>Aún no tienes instrumentos registrados.</p>";
         return;
       }
-
       let html = "<ul style='list-style:none; padding:0;'>";
       instrumentos.forEach(inst => {
-        html += `
-          <li style="padding:15px; background:#0f172a; margin:10px 0; border-radius:10px;">
-            <strong>${inst.categoria} - ${inst.subcategoria}</strong><br>
-            ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}
-          </li>`;
+        html += `<li style="padding:15px; background:#0f172a; margin:10px 0; border-radius:10px;">
+          <strong>${inst.categoria} - ${inst.subcategoria}</strong><br>
+          ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}
+        </li>`;
       });
       html += "</ul>";
       lista.innerHTML = html;

@@ -41,7 +41,7 @@
     .card {
       background: #1e2937;
       border-radius: 16px;
-      padding: 30px;
+      padding: 35px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
     input, select, textarea {
@@ -62,10 +62,10 @@
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 15px;
     }
-    label { color: #94a3b8; display: block; margin-top: 15px; font-weight: 500; }
-    h2 { color: #60a5fa; }
+    label { color: #94a3b8; display: block; margin-top: 18px; font-weight: 500; }
+    h2 { color: #60a5fa; margin-bottom: 25px; }
   </style>
 </head>
 <body>
@@ -87,7 +87,7 @@
       <input type="text" id="marca" placeholder="Marca">
       <input type="text" id="modelo" placeholder="Modelo">
 
-      <label>Tipo de Instrumento</label>
+      <label>Tipo de Instrumento - Categoría</label>
       <select id="categoria" onchange="actualizarSubcategoria()">
         <option value="">Seleccione Categoría</option>
         <option value="Viento Madera">Viento Madera</option>
@@ -98,18 +98,24 @@
         <option value="Otros">Otros</option>
       </select>
 
+      <label>Subcategoría</label>
       <select id="subcategoria">
         <option value="">Seleccione Subcategoría</option>
       </select>
 
+      <label>✍️ Comentarios Generales del Instrumento</label>
+      <textarea id="comentarios" rows="4" placeholder="Detalles adicionales, accesorios, condiciones especiales, etc..."></textarea>
+
+      <label>Estado del Instrumento</label>
       <select id="estado">
-        <option value="">Estado del Instrumento</option>
+        <option value="">Seleccione Estado</option>
         <option value="Nuevo">Nuevo</option>
         <option value="En Uso">En Uso</option>
       </select>
 
+      <label>Tipo de Institución</label>
       <select id="tipoInstitucion">
-        <option value="">Tipo de Institución</option>
+        <option value="">Seleccione Tipo</option>
         <option value="Pública">Pública</option>
         <option value="Privada">Privada</option>
       </select>
@@ -125,13 +131,10 @@
       <input type="file" id="foto2" accept="image/*">
       <input type="file" id="foto3" accept="image/*">
 
-      <label>✍️ Comentarios Generales</label>
-      <textarea id="comentarios" rows="4" placeholder="Información adicional, detalles especiales, accesorios incluidos, etc..."></textarea>
-
       <button onclick="registrarInstrumento()">Registrar Instrumento</button>
     </div>
 
-    <!-- Las otras pestañas se mantienen -->
+    <!-- CONSULTA -->
     <div class="section card" id="tab1">
       <h2>🔎 Consultar Instrumento</h2>
       <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
@@ -139,6 +142,7 @@
       <div id="resultadoConsulta" class="result"></div>
     </div>
 
+    <!-- MIS INSTRUMENTOS -->
     <div class="section card" id="tab2">
       <h2>🎵 Mis Instrumentos Registrados</h2>
       <button onclick="mostrarMisInstrumentos()">Actualizar Lista</button>
@@ -150,14 +154,12 @@
     let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
 
     const subcategorias = {
-      "Viento Madera": [
-        "Flauta Transversal", "Piccolo", "Clarinete Requinto", "Clarinete Soprano", 
-        "Clarinete en Do", "Clarinete Alto", "Oboe", "Fagot", "Corno Inglés", "Contrafagot"
-      ],
-      "Viento Metal": [
-        "Trompeta en Sib", "Trompeta en Do", "Trompeta Piccolo", "Fliscorno", "Corno Simple", 
-        "Corno Doble", "Trombón Tenor", "Trombón Bajo", "Eufonio", "Tuba en Sib", "Sousafón"
-      ]
+      "Viento Madera": ["Flauta Transversal", "Piccolo", "Clarinete Requinto", "Clarinete Soprano", "Clarinete Alto", "Oboe", "Fagot", "Corno Inglés"],
+      "Viento Metal": ["Trompeta en Sib", "Trompeta en Do", "Fliscorno", "Corno", "Trombón Tenor", "Trombón Bajo", "Eufonio", "Tuba", "Sousafón"],
+      "Cuerda": ["Cuerda Frotada", "Cuerda Pulsada"],
+      "Percusión": ["Batería", "Tambor", "Marimba", "Congas"],
+      "Teclado": ["Piano", "Teclado", "Órgano"],
+      "Otros": ["Otros"]
     };
 
     function actualizarSubcategoria() {
@@ -190,12 +192,12 @@
         modelo: document.getElementById('modelo').value,
         categoria: document.getElementById('categoria').value,
         subcategoria: document.getElementById('subcategoria').value,
+        comentarios: document.getElementById('comentarios').value,
         estado: document.getElementById('estado').value,
         tipoInstitucion: document.getElementById('tipoInstitucion').value,
         nombreInstitucion: document.getElementById('nombreInstitucion').value,
         numeroFactura: document.getElementById('numeroFactura').value,
         tiendaCompra: document.getElementById('tiendaCompra').value,
-        comentarios: document.getElementById('comentarios').value,
         fecha: new Date().toLocaleDateString('es-ES')
       };
 
@@ -206,7 +208,6 @@
       limpiarFormulario();
     }
 
-    // (Mantengo las funciones de consulta y lista para que funcione)
     function consultarSerial() {
       const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
       const resultado = document.getElementById('resultadoConsulta');
@@ -215,10 +216,10 @@
       if (encontrado) {
         resultado.innerHTML = `
           <strong>✅ Instrumento Encontrado</strong><br><br>
-          ${encontrado.categoria} - ${encontrado.subcategoria}<br>
-          Marca/Modelo: ${encontrado.marca} ${encontrado.modelo}<br>
+          ${encontrado.categoria} → ${encontrado.subcategoria}<br>
+          ${encontrado.marca} ${encontrado.modelo}<br>
           Propietario: ${encontrado.propietario}<br>
-          Comentarios: ${encontrado.comentarios || 'Ninguno'}
+          Comentarios: ${encontrado.comentarios || 'Sin comentarios'}
         `;
       } else {
         resultado.innerHTML = `<strong style="color:#ef4444;">❌ Instrumento NO encontrado.</strong>`;
@@ -237,8 +238,7 @@
         html += `
           <li style="padding:15px; background:#0f172a; margin:10px 0; border-radius:10px;">
             <strong>${inst.categoria} - ${inst.subcategoria}</strong><br>
-            ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}<br>
-            <small>${inst.comentarios ? 'Comentarios: ' + inst.comentarios : ''}</small>
+            ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}
           </li>`;
       });
       html += "</ul>";
@@ -252,12 +252,12 @@
       document.getElementById('modelo').value = '';
       document.getElementById('categoria').value = '';
       document.getElementById('subcategoria').value = '';
+      document.getElementById('comentarios').value = '';
       document.getElementById('estado').value = '';
       document.getElementById('tipoInstitucion').value = '';
       document.getElementById('nombreInstitucion').value = '';
       document.getElementById('numeroFactura').value = '';
       document.getElementById('tiendaCompra').value = '';
-      document.getElementById('comentarios').value = '';
     }
 
     function openTab(n) {

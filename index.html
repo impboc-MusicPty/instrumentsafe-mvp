@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>InstrumentSafe - Registro Seguro</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
     body {
       font-family: 'Inter', sans-serif;
@@ -15,57 +15,101 @@
       min-height: 100vh;
     }
     header {
-      background: rgba(15, 23, 42, 0.95);
-      padding: 1rem 0;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      padding: 1.2rem 0;
       border-bottom: 1px solid #334155;
       position: sticky;
       top: 0;
       z-index: 100;
     }
-    .logo { font-size: 28px; font-weight: 700; color: #60a5fa; text-align: center; }
-    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    .tab { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      color: #60a5fa;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+    .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+    
+    .tab {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
     .tab-btn {
-      padding: 14px 28px;
+      padding: 16px 32px;
       background: #1e2937;
       color: #cbd5e1;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .tab-btn:hover {
+      background: #334155;
     }
     .tab-btn.active {
       background: #3b82f6;
       color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
     }
+
     .card {
       background: #1e2937;
-      border-radius: 16px;
-      padding: 35px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      border: 1px solid #334155;
     }
+
     input, select, textarea {
       width: 100%;
-      padding: 14px;
-      margin: 10px 0;
+      padding: 15px;
+      margin: 12px 0;
       background: #0f172a;
       border: 1px solid #475569;
-      border-radius: 10px;
+      border-radius: 12px;
       color: white;
       font-size: 16px;
+      transition: border 0.3s;
     }
+    input:focus, select:focus, textarea:focus {
+      border-color: #60a5fa;
+      outline: none;
+    }
+
     button {
-      padding: 14px 32px;
-      background: #22c55e;
+      padding: 16px 36px;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
       color: black;
       border: none;
-      border-radius: 10px;
-      font-weight: 600;
+      border-radius: 12px;
+      font-weight: 700;
       cursor: pointer;
-      margin-top: 15px;
+      font-size: 17px;
+      transition: all 0.3s;
     }
-    label { color: #94a3b8; display: block; margin-top: 18px; font-weight: 500; }
-    h2 { color: #60a5fa; margin-bottom: 25px; }
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
+    }
+
+    label { 
+      color: #94a3b8; 
+      display: block; 
+      margin-top: 20px; 
+      font-weight: 600;
+      font-size: 15px;
+    }
+    h2 { 
+      color: #60a5fa; 
+      margin-bottom: 30px;
+      font-size: 26px;
+    }
   </style>
 </head>
 <body>
@@ -120,7 +164,7 @@
       <button onclick="registrarInstrumento()">Registrar Instrumento</button>
     </div>
 
-    <!-- Otras pestañas (Consulta y Mis Instrumentos) -->
+    <!-- Consulta y Mis Instrumentos (mantenidos) -->
     <div class="section card" id="tab1">
       <h2>🔎 Consultar Instrumento</h2>
       <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
@@ -136,6 +180,7 @@
   </div>
 
   <script>
+    // (El script es el mismo que la versión anterior, solo copio las funciones principales)
     let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
 
     function actualizarSubcategoria() {
@@ -149,7 +194,6 @@
           <option value="Cuerda Pulsada">Cuerda Pulsada</option>
         `;
       }
-      // Puedes agregar más subcategorías aquí después
     }
 
     function actualizarTipoInstrumento() {
@@ -205,7 +249,6 @@
       limpiarFormulario();
     }
 
-    // Funciones restantes (consultar, mostrar, etc.)
     function consultarSerial() {
       const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
       const resultado = document.getElementById('resultadoConsulta');

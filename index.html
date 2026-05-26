@@ -23,22 +23,10 @@
       top: 0;
       z-index: 100;
     }
-    .logo {
-      font-size: 32px;
-      font-weight: 700;
-      color: #60a5fa;
-      text-align: center;
-      letter-spacing: -1px;
-    }
+    .logo { font-size: 32px; font-weight: 700; color: #60a5fa; text-align: center; letter-spacing: -1px; }
     .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
     
-    .tab {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
+    .tab { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
     .tab-btn {
       padding: 16px 32px;
       background: #1e2937;
@@ -48,9 +36,6 @@
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s;
-    }
-    .tab-btn:hover {
-      background: #334155;
     }
     .tab-btn.active {
       background: #3b82f6;
@@ -75,7 +60,6 @@
       border-radius: 12px;
       color: white;
       font-size: 16px;
-      transition: border 0.3s;
     }
     input:focus, select:focus, textarea:focus {
       border-color: #60a5fa;
@@ -105,11 +89,7 @@
       font-weight: 600;
       font-size: 15px;
     }
-    h2 { 
-      color: #60a5fa; 
-      margin-bottom: 30px;
-      font-size: 26px;
-    }
+    h2 { color: #60a5fa; margin-bottom: 30px; font-size: 26px; }
   </style>
 </head>
 <body>
@@ -161,10 +141,28 @@
         <option value="En Uso">En Uso</option>
       </select>
 
+      <label>Tipo de Institución</label>
+      <select id="tipoInstitucion">
+        <option value="">Seleccione Tipo</option>
+        <option value="Pública">Pública</option>
+        <option value="Privada">Privada</option>
+      </select>
+      <input type="text" id="nombreInstitucion" placeholder="Nombre de la institución">
+
+      <label>📄 Datos de la Factura</label>
+      <input type="text" id="numeroFactura" placeholder="Número de Factura">
+      <input type="text" id="tiendaCompra" placeholder="Nombre de la Tienda / Empresa">
+      <input type="file" id="fotoFactura" accept="image/*">
+
+      <label>📸 Fotografías del Instrumento (hasta 3)</label>
+      <input type="file" id="foto1" accept="image/*">
+      <input type="file" id="foto2" accept="image/*">
+      <input type="file" id="foto3" accept="image/*">
+
       <button onclick="registrarInstrumento()">Registrar Instrumento</button>
     </div>
 
-    <!-- Consulta y Mis Instrumentos (mantenidos) -->
+    <!-- Consulta y Mis Instrumentos -->
     <div class="section card" id="tab1">
       <h2>🔎 Consultar Instrumento</h2>
       <input type="text" id="buscarSerial" placeholder="Ingresa el Número de Serie">
@@ -180,7 +178,6 @@
   </div>
 
   <script>
-    // (El script es el mismo que la versión anterior, solo copio las funciones principales)
     let instrumentos = JSON.parse(localStorage.getItem('instrumentos')) || [];
 
     function actualizarSubcategoria() {
@@ -193,6 +190,10 @@
           <option value="Cuerda Frotada">Cuerda Frotada</option>
           <option value="Cuerda Pulsada">Cuerda Pulsada</option>
         `;
+      } else if (categoria === "Viento Madera") {
+        subSelect.innerHTML += `<option value="Viento Madera">Viento Madera</option>`;
+      } else if (categoria === "Viento Metal") {
+        subSelect.innerHTML += `<option value="Viento Metal">Viento Metal</option>`;
       }
     }
 
@@ -239,6 +240,10 @@
         tipoEspecifico: document.getElementById('tipoEspecifico').value,
         comentarios: document.getElementById('comentarios').value,
         estado: document.getElementById('estado').value,
+        tipoInstitucion: document.getElementById('tipoInstitucion').value,
+        nombreInstitucion: document.getElementById('nombreInstitucion').value,
+        numeroFactura: document.getElementById('numeroFactura').value,
+        tiendaCompra: document.getElementById('tiendaCompra').value,
         fecha: new Date().toLocaleDateString('es-ES')
       };
 
@@ -249,6 +254,7 @@
       limpiarFormulario();
     }
 
+    // Funciones de consulta y lista (mantenidas)
     function consultarSerial() {
       const serial = document.getElementById('buscarSerial').value.trim().toUpperCase();
       const resultado = document.getElementById('resultadoConsulta');
@@ -257,9 +263,9 @@
       if (encontrado) {
         resultado.innerHTML = `
           <strong>✅ Instrumento Encontrado</strong><br><br>
-          ${encontrado.categoria} → ${encontrado.subcategoria} → ${encontrado.tipoEspecifico}<br>
+          ${encontrado.categoria} → ${encontrado.subcategoria} → ${encontrado.tipoEspecifico || ''}<br>
           ${encontrado.marca} ${encontrado.modelo}<br>
-          Comentarios: ${encontrado.comentarios || 'Sin comentarios'}
+          Propietario: ${encontrado.propietario}
         `;
       } else {
         resultado.innerHTML = `<strong style="color:#ef4444;">❌ Instrumento NO encontrado.</strong>`;
@@ -275,7 +281,7 @@
       let html = "<ul style='list-style:none; padding:0;'>";
       instrumentos.forEach(inst => {
         html += `<li style="padding:15px; background:#0f172a; margin:10px 0; border-radius:10px;">
-          <strong>${inst.categoria} - ${inst.subcategoria} - ${inst.tipoEspecifico}</strong><br>
+          <strong>${inst.categoria} - ${inst.subcategoria} - ${inst.tipoEspecifico || ''}</strong><br>
           ${inst.marca} ${inst.modelo} | Serial: ${inst.serial}
         </li>`;
       });
@@ -293,6 +299,10 @@
       document.getElementById('tipoEspecifico').value = '';
       document.getElementById('comentarios').value = '';
       document.getElementById('estado').value = '';
+      document.getElementById('tipoInstitucion').value = '';
+      document.getElementById('nombreInstitucion').value = '';
+      document.getElementById('numeroFactura').value = '';
+      document.getElementById('tiendaCompra').value = '';
     }
 
     function openTab(n) {
